@@ -1,0 +1,8 @@
+spring:
+  jpa:
+    open-in-view: true
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: dev
+
