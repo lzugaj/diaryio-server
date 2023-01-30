@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="20230112-000-1" author="lzugaj">
+        <createTable tableName="note">
+            <column name="id" type="bigserial">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+
+            <column name="title" type="VARCHAR(64)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="description" type="VARCHAR(256)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="location" type="VARCHAR(32)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="event_date" type="DATE">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="modified_at" type="TIMESTAMP">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
