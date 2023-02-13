@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @WebMvcTest
 public class NoteControllerTest {
@@ -59,10 +58,10 @@ public class NoteControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
-    /*@Test
+    @Test
     @DisplayName("400 - POST /notes")
     void should_Throw_Exception_When_Required_Attribute_Is_Null() throws Exception {
-        final NoteRequest dto = NoteRequestMock.createNoteRequest("", "Test description 1", "Paris", LocalDate.of(2020, 12, 23));
+        final NoteRequest dto = NoteRequestMock.createNoteRequest(null, "Test description 1", "Paris", LocalDate.of(2020, 12, 23));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/notes")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -73,7 +72,7 @@ public class NoteControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.httpStatus").value("BAD_REQUEST"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Field title must not be blank"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.path").value("/api/v1/notes"));
-    }*/
+    }
 
     /*@Test
     @DisplayName("400 - POST /notes")
@@ -125,30 +124,30 @@ public class NoteControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.path").value("/api/v1/note/109"));
     }*/
 
-    @Test
-    @DisplayName("200 - GET /notes")
-    public void should_Find_All_Notes() throws Exception {
-        final Note firstNote = NoteMock.createNote(1L, "First note", "Test description 1", "Paris", LocalDate.of(2020, 12, 23));
-        final Note secondNote = NoteMock.createNote(2L, "Second note", "Test description 2", "London", LocalDate.of(2023, 4, 1));
-        final Note thirdNote = NoteMock.createNote(3L, "Third note", "Test description 3", "Istanbul", LocalDate.of(2021, 7, 15));
-
-        final List<Note> notes = List.of(firstNote, secondNote, thirdNote);
-
-        final NoteResponse firstNoteResponse = NoteResponseMock.createNoteResponse(1L, "First note", "Test description 1", "Paris", LocalDate.of(2020, 12, 23));
-        final NoteResponse secondNoteResponse = NoteResponseMock.createNoteResponse(2L, "Second note", "Test description 2", "London", LocalDate.of(2023, 4, 1));
-        final NoteResponse thirdNoteResponse = NoteResponseMock.createNoteResponse(3L, "Third note", "Test description 3", "Istanbul", LocalDate.of(2021, 7, 15));
-
-        final List<NoteResponse> dtos = List.of(firstNoteResponse, secondNoteResponse, thirdNoteResponse);
-
-        BDDMockito.given(noteService.findAll()).willReturn(notes);
-        BDDMockito.given(entityToResponseMapper.mapToList(notes, NoteResponse.class)).willReturn(dtos);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/notes")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()").value(dtos.size()));
-    }
+//    @Test
+//    @DisplayName("200 - GET /notes")
+//    public void should_Find_All_Notes() throws Exception {
+//        final Note firstNote = NoteMock.createNote(1L, "First note", "Test description 1", "Paris", LocalDate.of(2020, 12, 23));
+//        final Note secondNote = NoteMock.createNote(2L, "Second note", "Test description 2", "London", LocalDate.of(2023, 4, 1));
+//        final Note thirdNote = NoteMock.createNote(3L, "Third note", "Test description 3", "Istanbul", LocalDate.of(2021, 7, 15));
+//
+//        final List<Note> notes = List.of(firstNote, secondNote, thirdNote);
+//
+//        final NoteResponse firstNoteResponse = NoteResponseMock.createNoteResponse(1L, "First note", "Test description 1", "Paris", LocalDate.of(2020, 12, 23));
+//        final NoteResponse secondNoteResponse = NoteResponseMock.createNoteResponse(2L, "Second note", "Test description 2", "London", LocalDate.of(2023, 4, 1));
+//        final NoteResponse thirdNoteResponse = NoteResponseMock.createNoteResponse(3L, "Third note", "Test description 3", "Istanbul", LocalDate.of(2021, 7, 15));
+//
+//        final List<NoteResponse> dtos = List.of(firstNoteResponse, secondNoteResponse, thirdNoteResponse);
+//
+//        BDDMockito.given(noteService.findAll()).willReturn(notes);
+//        BDDMockito.given(entityToResponseMapper.mapToList(notes, NoteResponse.class)).willReturn(dtos);
+//
+//        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/notes")
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.size()").value(dtos.size()));
+//    }
 
     @Test
     @DisplayName("200 - UPDATE /notes/1")

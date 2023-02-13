@@ -1,6 +1,7 @@
 package com.luv2code.diaryio.service;
 
 import com.luv2code.diaryio.model.Note;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public interface NoteService {
 
     Note findById(final Long id);
 
-    List<Note> findAll();
+    Page<Note> findAll(final Integer pageNumber, final Integer pageSize);
 
     void update(final Note note);
 
