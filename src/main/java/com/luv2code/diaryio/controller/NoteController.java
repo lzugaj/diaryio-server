@@ -2,23 +2,19 @@ package com.luv2code.diaryio.controller;
 
 import com.luv2code.diaryio.dto.NoteRequest;
 import com.luv2code.diaryio.dto.NoteResponse;
+import com.luv2code.diaryio.dto.PageableNoteResponse;
 import com.luv2code.diaryio.mapper.EntityToResponseMapper;
 import com.luv2code.diaryio.mapper.RequestToEntityMapper;
 import com.luv2code.diaryio.model.Note;
 import com.luv2code.diaryio.service.NoteService;
+import com.luv2code.diaryio.util.AppConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -65,13 +61,25 @@ public class NoteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<NoteResponse>> findAll() {
-        final List<Note> searchedNotes = noteService.findAll();
-        LOGGER.info("Successfully found all searched Notes. [total={}]", searchedNotes.size());
+    public ResponseEntity<PageableNoteResponse> findAll(@RequestParam(value = "pageNumber", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNumber,
+                                                        @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize) {
+        final Page<Note> searchedNotes = noteService.findAll(pageNumber, pageSize);
+        LOGGER.info("Successfully found all searched Notes for current page. [total={}, currentPage={}]", searchedNotes.getContent().size(), pageNumber);
 
-        final List<NoteResponse> dtos = entityToResponseMapper.mapToList(searchedNotes, NoteResponse.class);
+        final List<NoteResponse> dtos = entityToResponseMapper.mapToList(searchedNotes.getContent(), NoteResponse.class);
         LOGGER.debug("Successfully mapped list of Note to list of NoteResponse.");
-        return ResponseEntity.status(HttpStatus.OK).body(dtos);
+
+        return ResponseEntity.status(HttpStatus.OK).body(mapToPageableResponse(searchedNotes, dtos));
+    }
+
+    // TODO: Should be extracted to mapper?
+    private static PageableNoteResponse mapToPageableResponse(final Page<Note> searchedNotes, final List<NoteResponse> dtos) {
+        return PageableNoteResponse.builder()
+                .totalItems(searchedNotes.getTotalElements())
+                .content(dtos)
+                .totalPages(searchedNotes.getTotalPages())
+                .currentPage(searchedNotes.getNumber())
+                .build();
     }
 
     @PatchMapping("/{id}")

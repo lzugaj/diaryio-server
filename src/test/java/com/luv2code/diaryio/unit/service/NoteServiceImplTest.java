@@ -15,12 +15,12 @@ import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
-import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,16 +98,20 @@ public class NoteServiceImplTest {
     @DisplayName(value = "Test find all Notes, expected ok")
     public void should_Find_All_Notes() {
         // Given
-        BDDMockito.given(noteRepository.findAll()).willReturn(notes);
+        final List<Note> paginatedNotes = List.of(secondNote, thirdNote);
+        final Page<Note> pageable = new PageImpl<>(paginatedNotes);
+        BDDMockito.given(noteRepository.findAll(PageRequest.of(0, 2, Sort.by("eventDate").descending()))).willReturn(pageable);
 
         // When
-        final List<Note> searchedNotes = noteService.findAll();
+        final Page<Note> searchedNotes = noteService.findAll(0, 2);
 
         // Then
-        Assertions.assertEquals(3, searchedNotes.size());
+        Assertions.assertEquals(2, searchedNotes.getContent().size());
+        Assertions.assertEquals(LocalDate.of(2023, 4, 1), searchedNotes.getContent().get(0).getEventDate());
     }
 
     @Test
+    @DisplayName(value = "Test update selected Note, expected ok")
     public void should_Update_Selected_Note() {
         // Given
         BDDMockito.given(noteRepository.save(thirdNote)).willReturn(thirdNote);
@@ -120,6 +124,7 @@ public class NoteServiceImplTest {
     }
 
     @Test
+    @DisplayName(value = "Test delete selected Note, expected ok")
     public void should_Delete_Selected_Note() {
         // Given
         BDDMockito.doNothing().when(noteRepository).delete(secondNote);

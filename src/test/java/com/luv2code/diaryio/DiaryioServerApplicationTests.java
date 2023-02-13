@@ -8,6 +8,7 @@ class DiaryioServerApplicationTests {
 
     @Test
     void contextLoads() {
+        DiaryioServerApplication.main(new String[] {});
     }
 
 }
